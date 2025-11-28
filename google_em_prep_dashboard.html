@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Google L6/L7 EM Prep Commander</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; color: #1e293b; }
+        .chart-container { position: relative; width: 100%; max-width: 600px; margin-left: auto; margin-right: auto; height: 300px; max-height: 400px; }
+        @media (min-width: 768px) { .chart-container { height: 350px; } }
+        .tab-active { border-bottom: 2px solid #2563eb; color: #2563eb; font-weight: 600; }
+        .tab-inactive { color: #64748b; font-weight: 400; }
+        .tab-inactive:hover { color: #334155; }
+        .card-hover:hover { transform: translateY(-2px); box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); }
+        .check-transition { transition: all 0.2s ease-in-out; }
+    </style>
+</head>
+<body class="flex flex-col min-h-screen">
+
+    <!-- Navbar -->
+    <nav class="bg-white border-b border-slate-200 shadow-sm sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <span class="text-2xl font-bold text-slate-800 tracking-tight">Google EM <span class="text-blue-600">Prep Commander</span></span>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <div class="text-sm text-slate-500 hidden md:block">Target: L6/L7 Engineering Manager</div>
+                    <div class="h-8 w-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-bold border border-blue-200">EM</div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full">
+        
+        <!-- Intro Section -->
+        <section class="mb-10 bg-white rounded-xl shadow-sm border border-slate-100 p-6 md:p-8">
+            <h1 class="text-3xl font-bold text-slate-900 mb-4">Your 12-Week Roadmap</h1>
+            <p class="text-slate-600 text-lg leading-relaxed max-w-4xl">
+                This dashboard converts the 12-week Google Engineering Manager preparation plan into an actionable tracker. 
+                The interview process focuses on three pillars: <strong>Leadership (L)</strong>, <strong>System Design (SD)</strong>, and <strong>Coding/Code Review (C)</strong>. 
+                Below, you will find weekly tasks integrated with essential resources from the preparatory guide. 
+                Track your progress, dive into the recommended materials, and monitor your focus balance to ensure comprehensive coverage.
+            </p>
+        </section>
+
+        <!-- Analytics & Progress Dashboard -->
+        <section class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-12">
+            <!-- Progress Card -->
+            <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 flex flex-col">
+                <h2 class="text-lg font-semibold text-slate-800 mb-2">Overall Progress</h2>
+                <p class="text-sm text-slate-500 mb-6">Real-time completion tracking based on weekly tasks.</p>
+                <div class="flex-grow flex items-center justify-center">
+                    <div class="chart-container">
+                        <canvas id="progressChart"></canvas>
+                    </div>
+                </div>
+                <div class="text-center mt-4">
+                    <span id="progressPercentage" class="text-3xl font-bold text-blue-600">0%</span>
+                    <span class="text-slate-400 text-sm block">Completed</span>
+                </div>
+            </div>
+
+            <!-- Focus Distribution Card -->
+            <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 col-span-1 lg:col-span-2 flex flex-col">
+                <h2 class="text-lg font-semibold text-slate-800 mb-2">Weekly Focus Intensity</h2>
+                <p class="text-sm text-slate-500 mb-6">See how the study balance shifts between Leadership, System Design, and Coding over the 12 weeks.</p>
+                <div class="flex-grow">
+                    <div class="chart-container" style="max-width: 100%;">
+                        <canvas id="focusChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Phase Navigation -->
+        <div class="border-b border-slate-200 mb-8">
+            <nav class="-mb-px flex space-x-8" aria-label="Tabs">
+                <button onclick="switchPhase(1)" id="tab-1" class="tab-active whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors duration-200">
+                    Phase 1: Foundation (Weeks 1-4)
+                </button>
+                <button onclick="switchPhase(2)" id="tab-2" class="tab-inactive whitespace-nowrap py-4 px-1 border-b-2 border-transparent font-medium text-sm transition-colors duration-200">
+                    Phase 2: Depth (Weeks 5-8)
+                </button>
+                <button onclick="switchPhase(3)" id="tab-3" class="tab-inactive whitespace-nowrap py-4 px-1 border-b-2 border-transparent font-medium text-sm transition-colors duration-200">
+                    Phase 3: Mocks & Polish (Weeks 9-12)
+                </button>
+            </nav>
+        </div>
+
+        <!-- Weekly Cards Container -->
+        <div id="phase-content-area" class="space-y-6">
+            <!-- Dynamic Content Injected Here -->
+        </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-slate-50 border-t border-slate-200 mt-12 py-8">
+        <div class="max-w-7xl mx-auto px-4 text-center text-slate-400 text-sm">
+            <p>&copy; 2025 Google EM Prep Commander. Resources integrated for efficiency.</p>
+        </div>
+    </footer>
+
+    <script>
+        // --- External Resource Mapping ---
+        // Links now point to the em_prep_resources.md file within the same repository.
+        const RESOURCE_LINK = 'em_prep_resources.md';
+        const RESOURCE_LINKS = {
+            L: [
+                { title: "The Manager's Path (Book)", link: RESOURCE_LINK },
+                { title: "STAR Method Guide (Framework)", link: RESOURCE_LINK },
+                { title: "L6/L7 Job Descriptions", link: RESOURCE_LINK }
+            ],
+            SD: [
+                { title: "Designing Data-Intensive Apps (Book)", link: RESOURCE_LINK },
+                { title: "System Design Primer (GitHub)", link: RESOURCE_LINK },
+                { title: "Grokking SD Interview (Course)", link: RESOURCE_LINK }
+            ],
+            C: [
+                { title: "LeetCode (Medium)", link: RESOURCE_LINK },
+                { title: "SOLID Principles Guide", link: RESOURCE_LINK },
+                { title: "Google Style Guides", link: RESOURCE_LINK }
+            ],
+            MOCK: [
+                { title: "Pramp / Peer Mocks", link: RESOURCE_LINK },
+                { title: "Timing Practice", link: RESOURCE_LINK }
+            ]
+        };
+
+        // --- Roadmap Data ---
+        const roadmapData = {
+            1: [
+                {
+                    week: 1,
+                    title: "Foundation & Story Sourcing",
+                    desc: "Establish baseline and identify core stories.",
+                    focus: { L: 40, SD: 30, C: 30 }, 
+                    tasks: {
+                        L: "Identify 3 stories on conflict resolution (team vs. team, team vs. stakeholder). Research specific team/role.",
+                        SD: "Review Distributed Systems concepts: CAP Theorem, Latency vs. Throughput, High Availability (HA).",
+                        C: "DSA Refresh: Arrays and Hash Maps. Practice 10-15 LeetCode Easy/Medium questions."
+                    },
+                    resources: { L: [RESOURCE_LINKS.L[0], RESOURCE_LINKS.L[1]], SD: [RESOURCE_LINKS.SD[1]], C: [RESOURCE_LINKS.C[0]] }
+                },
+                {
+                    week: 2,
+                    title: "Performance & Scaling Basics",
+                    desc: "Drafting performance stories and reviewing scaling fundamentals.",
+                    focus: { L: 40, SD: 30, C: 30 },
+                    tasks: {
+                        L: "Draft 3 stories: Managing high & low performers (coaching, PIPs, recognition). Write using STAR method.",
+                        SD: "Review Load Balancing (L4 vs L7), Caching Layers (CDN, in-memory, distributed), DB Scaling (Vertical vs Horizontal).",
+                        C: "DSA Refresh: Strings and Linked Lists. Focus on clean code/comments. Practice in plain text editor."
+                    },
+                    resources: { L: [{ title: "Radical Candor (Book)", link: RESOURCE_LINK }], SD: [RESOURCE_LINKS.SD[2]], C: [RESOURCE_LINKS.C[0], RESOURCE_LINKS.C[2]] }
+                },
+                {
+                    week: 3,
+                    title: "Influence & Data Storage",
+                    desc: "Leadership by influence and deep dive into databases.",
+                    focus: { L: 35, SD: 40, C: 25 },
+                    tasks: {
+                        L: "Draft 2-3 stories: Driving cross-org change or influencing technical decisions without authority.",
+                        SD: "Deep dive: SQL vs. NoSQL (Cassandra, Bigtable, MongoDB), partitioning/sharding strategies, Indexing.",
+                        C: "Code Review Prep: Best practices for API design, naming conventions, security/performance pitfalls."
+                    },
+                    resources: { L: [{ title: "High Output Management (Book)", link: RESOURCE_LINK }], SD: [RESOURCE_LINKS.SD[0]], C: [RESOURCE_LINKS.C[2]] }
+                },
+                {
+                    week: 4,
+                    title: "Project Management & Initial Design",
+                    desc: "Handling risk and first full system design practice.",
+                    focus: { L: 30, SD: 40, C: 30 },
+                    tasks: {
+                        L: "Draft 2 stories: Managing project risk and handling scope change/ambiguity. Quantify results.",
+                        SD: "Design Practice: URL Shortener. Focus on requirements, High Level Design (HLD), and trade-offs.",
+                        C: "DSA Refresh: Trees (BST, Traversal) and Graphs (DFS, BFS). 1-2 Medium problems per concept."
+                    },
+                    resources: { L: [{ title: "High Output Management (Book)", link: RESOURCE_LINK }], SD: [RESOURCE_LINKS.SD[1], RESOURCE_LINKS.SD[2]], C: [RESOURCE_LINKS.C[0]] }
+                }
+            ],
+            2: [
+                {
+                    week: 5,
+                    title: "Philosophy & Social Feeds",
+                    desc: "Defining management style and designing feed systems.",
+                    focus: { L: 40, SD: 40, C: 20 },
+                    tasks: {
+                        L: "Prepare philosophy answers: 'Management style?', 'Defining success?', 'Diversity & Inclusion?'.",
+                        SD: "Large-Scale Design: Twitter/FB News Feed. Fan-out-on-write vs read, feed generation, caching.",
+                        C: "Code Review Practice: Review 3-5 GitHub PRs. Write formalized feedback."
+                    },
+                    resources: { L: [RESOURCE_LINKS.L[0], RESOURCE_LINKS.L[1]], SD: [RESOURCE_LINKS.SD[0], RESOURCE_LINKS.SD[2]], C: [RESOURCE_LINKS.C[2]] }
+                },
+                {
+                    week: 6,
+                    title: "Trade-offs & Scheduling",
+                    desc: "Hard decisions and distributed job scheduling.",
+                    focus: { L: 35, SD: 45, C: 20 },
+                    tasks: {
+                        L: "Stories: Making unpopular but correct decisions, handling Eng vs Product misalignment.",
+                        SD: "Large-Scale Design: Distributed Job Scheduler (Cron). Reliability, idempotency, state management.",
+                        C: "DSA Practice: Dynamic Programming (simple) and advanced Heap/Priority Queue use cases."
+                    },
+                    resources: { L: [{ title: "Radical Candor (Book)", link: RESOURCE_LINK }], SD: [RESOURCE_LINKS.SD[0], RESOURCE_LINKS.SD[1]], C: [RESOURCE_LINKS.C[0]] }
+                },
+                {
+                    week: 7,
+                    title: "Failure Analysis & Caching",
+                    desc: "Learning from failure and distributed caching deep dive.",
+                    focus: { L: 30, SD: 40, C: 30 },
+                    tasks: {
+                        L: "Story: Major project failure/mistake. Focus 80% on Action & Result/Learnings.",
+                        SD: "Large-Scale Design: Distributed Cache System. Consistency models, eviction (LRU/LFU), protocols.",
+                        C: "RRK: DevOps/SRE topics. Monitoring stacks, CI/CD pipelines, Postmortem process."
+                    },
+                    resources: { L: [RESOURCE_LINKS.L[1]], SD: [RESOURCE_LINKS.SD[0], RESOURCE_LINKS.SD[2]], C: [RESOURCE_LINKS.C[2]] }
+                },
+                {
+                    week: 8,
+                    title: "Googley-ness & Notifications",
+                    desc: "Cultural fit and message queue architectures.",
+                    focus: { L: 30, SD: 40, C: 30 },
+                    tasks: {
+                        L: "Research 'Googley-ness' (bias to action, ambiguity). Prepare 'Why Google?', 'Why this role?'.",
+                        SD: "Large-Scale Design: Notification System. Message queues (Kafka), throttling, delivery guarantees.",
+                        C: "RRK: Performance Optimization. Reducing tail latency, thread safety, concurrency."
+                    },
+                    resources: { L: [RESOURCE_LINKS.L[2]], SD: [RESOURCE_LINKS.SD[1], RESOURCE_LINKS.SD[0]], C: [RESOURCE_LINKS.C[1]] }
+                }
+            ],
+            3: [
+                {
+                    week: 9,
+                    title: "Mock Interviews (Round 1)",
+                    desc: "First round of mocks for all pillars.",
+                    focus: { L: 35, SD: 35, C: 30 },
+                    tasks: {
+                        L: "Mock Interview 1. Record yourself. Focus on pacing and STAR structure.",
+                        SD: "Mock Interview 1. Focus on clarifying requirements and discussing trade-offs.",
+                        C: "Code Review Mock: Articulate feedback verbally (15 mins)."
+                    },
+                    resources: { L: [RESOURCE_LINKS.MOCK[0]], SD: [RESOURCE_LINKS.MOCK[0]], C: [RESOURCE_LINKS.MOCK[0]] }
+                },
+                {
+                    week: 10,
+                    title: "Mock Interviews (Round 2)",
+                    desc: "Deep dive mocks and strategic thinking.",
+                    focus: { L: 35, SD: 35, C: 30 },
+                    tasks: {
+                        L: "Mock Interview 2. Deep dives into actions. Demonstrate strategic thinking (L7).",
+                        SD: "Mock Interview 2. Focus on back-of-envelope calculations and data models.",
+                        C: "DSA Final Drill: 5-10 Random LeetCode Mediums under time pressure (30 mins)."
+                    },
+                    resources: { L: [RESOURCE_LINKS.MOCK[1]], SD: [RESOURCE_LINKS.MOCK[1]], C: [RESOURCE_LINKS.MOCK[1]] }
+                },
+                {
+                    week: 11,
+                    title: "Review & Polish",
+                    desc: "Refining stories and design summaries.",
+                    focus: { L: 40, SD: 40, C: 20 },
+                    tasks: {
+                        L: "Refine top 5 stories for L6/L7 scope. Practice transitions.",
+                        SD: "Create 1-page summary sheets for 5 core designs (components, trade-offs).",
+                        C: "Conceptual Review: OOD principles (SOLID) and design patterns."
+                    },
+                    resources: { L: [RESOURCE_LINKS.L[1]], SD: [RESOURCE_LINKS.SD[0]], C: [RESOURCE_LINKS.C[1]] }
+                },
+                {
+                    week: 12,
+                    title: "Final Prep & Mindset",
+                    desc: "Final walkthroughs and relaxation.",
+                    focus: { L: 40, SD: 40, C: 20 },
+                    tasks: {
+                        L: "Read story bank. Prepare strategic questions for interviewers.",
+                        SD: "Watch 2-3 high-quality design videos. Mentally walk through complex designs.",
+                        C: "Relaxation. Reduce practice. Focus on mental clarity."
+                    },
+                    resources: { L: [RESOURCE_LINKS.L[2]], SD: [RESOURCE_LINKS.SD[1]], C: [RESOURCE_LINKS.C[2]] }
+                }
+            ]
+        };
+
+        // State Management
+        let currentPhase = 1;
+        // Load checked state from local storage or init empty
+        let checkedTasks = JSON.parse(localStorage.getItem('googlePrepState')) || {};
+
+        // --- Utility Functions ---
+
+        function createResourceLinksHTML(resources) {
+            if (!resources || resources.length === 0) return '';
+            
+            const linksHtml = resources.map(res => `
+                <a href="${res.link}" target="_blank" class="text-xs text-blue-500 hover:text-blue-700 transition duration-150 flex items-center space-x-1">
+                    <span class="text-sm">🔗</span>
+                    <span>${res.title}</span>
+                </a>
+            `).join('');
+
+            return `<div class="mt-2 space-y-1 p-2 rounded-lg bg-slate-50 border border-slate-200">${linksHtml}</div>`;
+        }
+
+        // --- Core Logic ---
+
+        function init() {
+            renderPhase(1);
+            updateProgress();
+            renderCharts();
+        }
+
+        function switchPhase(phaseNum) {
+            currentPhase = phaseNum;
+            
+            // Update Tab Styles
+            [1, 2, 3].forEach(p => {
+                const btn = document.getElementById(`tab-${p}`);
+                if (p === phaseNum) {
+                    btn.className = "tab-active whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors duration-200 cursor-pointer";
+                } else {
+                    btn.className = "tab-inactive whitespace-nowrap py-4 px-1 border-b-2 border-transparent font-medium text-sm transition-colors duration-200 cursor-pointer";
+                }
+            });
+
+            renderPhase(phaseNum);
+        }
+
+        function toggleTask(weekId, type) {
+            const key = `${weekId}-${type}`;
+            if (checkedTasks[key]) {
+                delete checkedTasks[key];
+            } else {
+                checkedTasks[key] = true;
+            }
+            // Save state
+            localStorage.setItem('googlePrepState', JSON.stringify(checkedTasks));
+            
+            updateProgress();
+            updateProgressChart();
+        }
+
+        function renderPhase(phaseNum) {
+            const container = document.getElementById('phase-content-area');
+            container.innerHTML = '';
+            
+            const weeks = roadmapData[phaseNum];
+            
+            // Intro for Phase
+            const phaseIntro = document.createElement('div');
+            phaseIntro.className = "mb-6 text-slate-600 italic";
+            if(phaseNum === 1) phaseIntro.innerText = "Phase 1 focuses on building your story bank and refreshing core CS concepts, supported by key foundational resources.";
+            if(phaseNum === 2) phaseIntro.innerText = "Phase 2 deepens your system design knowledge with complex examples and refines your management philosophy, using specialized literature.";
+            if(phaseNum === 3) phaseIntro.innerText = "Phase 3 is about execution: Mock interviews, timing, and polishing your delivery. Resources focus on practice and strategic review.";
+            container.appendChild(phaseIntro);
+
+            weeks.forEach(week => {
+                const weekCard = document.createElement('div');
+                weekCard.className = "bg-white rounded-lg shadow-sm border border-slate-200 overflow-hidden transition-all duration-300 card-hover";
+                
+                // Get resource links HTML
+                const L_Resources = createResourceLinksHTML(week.resources.L);
+                const SD_Resources = createResourceLinksHTML(week.resources.SD);
+                const C_Resources = createResourceLinksHTML(week.resources.C);
+
+                weekCard.innerHTML = `
+                    <div class="p-6">
+                        <div class="flex flex-col md:flex-row md:items-center justify-between mb-4">
+                            <div>
+                                <h3 class="text-xl font-bold text-slate-800">Week ${week.week}: ${week.title}</h3>
+                                <p class="text-slate-500 text-sm mt-1">${week.desc}</p>
+                            </div>
+                            <div class="mt-2 md:mt-0 flex items-center space-x-2">
+                                <span class="px-2 py-1 bg-indigo-50 text-indigo-700 text-xs font-semibold rounded">L: ${week.focus.L}%</span>
+                                <span class="px-2 py-1 bg-emerald-50 text-emerald-700 text-xs font-semibold rounded">SD: ${week.focus.SD}%</span>
+                                <span class="px-2 py-1 bg-amber-50 text-amber-700 text-xs font-semibold rounded">C: ${week.focus.C}%</span>
+                            </div>
+                        </div>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6 border-t border-slate-100 pt-6">
+                            <!-- Leadership Column -->
+                            <div class="space-y-3">
+                                <div class="flex items-center space-x-2 mb-2">
+                                    <div class="w-2 h-2 rounded-full bg-indigo-500"></div>
+                                    <h4 class="font-semibold text-slate-700">Leadership</h4>
+                                </div>
+                                <label class="flex items-start space-x-3 cursor-pointer group">
+                                    <input type="checkbox" 
+                                        class="mt-1 h-4 w-4 text-blue-600 rounded border-slate-300 focus:ring-blue-500 transition duration-150 ease-in-out"
+                                        onchange="toggleTask(${week.week}, 'L')"
+                                        ${checkedTasks[`${week.week}-L`] ? 'checked' : ''}>
+                                    <span class="text-sm text-slate-600 group-hover:text-slate-900 transition-colors">${week.tasks.L}</span>
+                                </label>
+                                ${L_Resources}
+                            </div>
+
+                            <!-- System Design Column -->
+                            <div class="space-y-3">
+                                <div class="flex items-center space-x-2 mb-2">
+                                    <div class="w-2 h-2 rounded-full bg-emerald-500"></div>
+                                    <h4 class="font-semibold text-slate-700">System Design</h4>
+                                </div>
+                                <label class="flex items-start space-x-3 cursor-pointer group">
+                                    <input type="checkbox" 
+                                        class="mt-1 h-4 w-4 text-blue-600 rounded border-slate-300 focus:ring-blue-500 transition duration-150 ease-in-out"
+                                        onchange="toggleTask(${week.week}, 'SD')"
+                                        ${checkedTasks[`${week.week}-SD`] ? 'checked' : ''}>
+                                    <span class="text-sm text-slate-600 group-hover:text-slate-900 transition-colors">${week.tasks.SD}</span>
+                                </label>
+                                ${SD_Resources}
+                            </div>
+
+                            <!-- Coding Column -->
+                            <div class="space-y-3">
+                                <div class="flex items-center space-x-2 mb-2">
+                                    <div class="w-2 h-2 rounded-full bg-amber-500"></div>
+                                    <h4 class="font-semibold text-slate-700">Coding / Review</h4>
+                                </div>
+                                <label class="flex items-start space-x-3 cursor-pointer group">
+                                    <input type="checkbox" 
+                                        class="mt-1 h-4 w-4 text-blue-600 rounded border-slate-300 focus:ring-blue-500 transition duration-150 ease-in-out"
+                                        onchange="toggleTask(${week.week}, 'C')"
+                                        ${checkedTasks[`${week.week}-C`] ? 'checked' : ''}>
+                                    <span class="text-sm text-slate-600 group-hover:text-slate-900 transition-colors">${week.tasks.C}</span>
+                                </label>
+                                ${C_Resources}
+                            </div>
+                        </div>
+                    </div>
+                `;
+                container.appendChild(weekCard);
+            });
+        }
+
+        // --- Chart Logic ---
+
+        let progressChartInstance;
+        let focusChartInstance;
+
+        function renderCharts() {
+            renderFocusChart();
+            renderProgressChart();
+        }
+
+        function updateProgress() {
+            // Total tasks = 12 weeks * 3 tasks/week = 36
+            const totalTasks = 36;
+            const completedCount = Object.keys(checkedTasks).length;
+            const percentage = Math.round((completedCount / totalTasks) * 100);
+            
+            document.getElementById('progressPercentage').innerText = `${percentage}%`;
+            
+            if (progressChartInstance) {
+                progressChartInstance.data.datasets[0].data = [completedCount, totalTasks - completedCount];
+                progressChartInstance.update();
+            }
+        }
+
+        function updateProgressChart() {
+            if(progressChartInstance) {
+                const totalTasks = 36;
+                const completedCount = Object.keys(checkedTasks).length;
+                progressChartInstance.data.datasets[0].data = [completedCount, totalTasks - completedCount];
+                progressChartInstance.update();
+            }
+        }
+
+        function renderProgressChart() {
+            const ctx = document.getElementById('progressChart').getContext('2d');
+            const completedCount = Object.keys(checkedTasks).length;
+            
+            progressChartInstance = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Completed', 'Remaining'],
+                    datasets: [{
+                        data: [completedCount, 36 - completedCount],
+                        backgroundColor: ['#2563eb', '#e2e8f0'],
+                        borderWidth: 0,
+                        hoverOffset: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: '75%',
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: { enabled: false }
+                    }
+                }
+            });
+        }
+
+        function renderFocusChart() {
+            const ctx = document.getElementById('focusChart').getContext('2d');
+            
+            // Extracting focus data from roadmapData
+            const weeks = [];
+            const lData = [];
+            const sdData = [];
+            const cData = [];
+
+            // Flatten data
+            [1, 2, 3].forEach(phase => {
+                roadmapData[phase].forEach(w => {
+                    weeks.push(`W${w.week}`);
+                    lData.push(w.focus.L);
+                    sdData.push(w.focus.SD);
+                    cData.push(w.focus.C);
+                });
+            });
+
+            focusChartInstance = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: weeks,
+                    datasets: [
+                        {
+                            label: 'Leadership',
+                            data: lData,
+                            backgroundColor: '#6366f1', // Indigo
+                            borderRadius: 4,
+                        },
+                        {
+                            label: 'System Design',
+                            data: sdData,
+                            backgroundColor: '#10b981', // Emerald
+                            borderRadius: 4,
+                        },
+                        {
+                            label: 'Coding/Review',
+                            data: cData,
+                            backgroundColor: '#f59e0b', // Amber
+                            borderRadius: 4,
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: { stacked: true, grid: { display: false } },
+                        y: { 
+                            stacked: true, 
+                            max: 100, 
+                            title: { display: true, text: 'Focus Intensity (%)' } 
+                        }
+                    },
+                    plugins: {
+                        legend: { position: 'bottom' },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return `${context.dataset.label}: ${context.raw}%`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Initialize App
+        window.onload = init;
+
+    </script>
+</body>
+</html>
